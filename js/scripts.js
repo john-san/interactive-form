@@ -4,12 +4,6 @@ let totalCost = 0;
 const $totalCostP = $('<p class="is-hidden"></p>');
 
 
-// initialize
-$('input[name="user-name"]').focus();
-$('input#other-title').hide();
-$('#colors-js-puns').hide();
-$activitiesParent.append($totalCostP);
-
 // show 'other role' input when 'other' is selected
 $('select#title').on('change', e => {
     const $jobRoleValue = $(e.target).val();
@@ -20,7 +14,7 @@ $('select#title').on('change', e => {
     }
 });
 
-// show & hide correct tShirt colors
+// show corresponding tShirt colors & hide others TODO: Fix this
 $('select#design').on('change', e => {
     const $designValue = $(e.target).val();
     const tShirts = {
@@ -102,41 +96,55 @@ $activitiesParent.on('change', 'input', function(e) {
 
 
 
-// event listener for payment select
+// show correct payment method info on selection
 $('#payment').on('change', (e) => {
-    // set value of payment method
-    const value = e.target.value;
-    // switch
-    switch(value) {
-        // credit card
-            // show credit card
-            // hide paypal
-            // hide bitcoin
+    const paymentMethod = e.target.value;
+    switch(paymentMethod) {
         case "credit card":
             $('#credit-card').show();
             $('#paypal').hide();
             $('#bitcoin').hide();
             break;
-        // paypal
-            // show paypal
-            // hide credit card
-            // hide bitcoin
         case "paypal":
             $('#paypal').show();
             $('#credit-card').hide();
             $('#bitcoin').hide();
             break;
-        // bitcoin
-            // show bitcoin
-            // hide paypal
-            // hide credit card
         case "bitcoin":
             $('#bitcoin').show();
             $('#paypal').hide();
             $('#credit-card').hide();
             break;
     }
-    // initialize
-    // select credit card
-    $('#payment').val('credit card').change();
-})
+    
+});
+
+
+const validateName = () => {
+    // name can't be blank
+
+}
+
+const validateEmail = () => {
+    // must be valid email, example: dave@teamtreehouse.com
+
+}
+
+const validateActivities = () => {
+    // at least 1 activity must be checked
+
+}
+
+const validateCC = () => {
+    // Credit Card field should only accept a number between 13 and 16 digits.
+    // The Zip Code field should accept a 5-digit number.
+    // The CVV should only accept a number that is exactly 3 digits long.
+}
+
+// initialize
+$('input[name="user-name"]').focus();
+$('input#other-title').hide();
+$('#colors-js-puns').hide();
+$activitiesParent.append($totalCostP);
+$('#payment option:first-of-type').attr('disabled', true); 
+$('#payment').val('credit card').change();
