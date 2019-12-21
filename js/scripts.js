@@ -1,11 +1,11 @@
+// globals
 
-
-// focus on name Field
+// focus on name Field on load
 $('input[name="user-name"]').focus();
-// initially hide Job Role-Other input
+// hide 'other role' input input on load
 $('input#other-title').hide();
 
-// show other role input field when 'other' is selected
+// show 'other role' input when 'other' is selected
 $('select#title').on('change', e => {
     const $jobRoleValue = $(e.target).val();
     if ($jobRoleValue === 'other') {
@@ -15,9 +15,10 @@ $('select#title').on('change', e => {
     }
 });
 
-// 
+//  hide shirt colors on load
 $('#colors-js-puns').hide();
 
+// show & hide correct tShirt colors
 $('select#design').on('change', e => {
     const $designValue = $(e.target).val();
     const tShirts = {
@@ -37,7 +38,7 @@ $('select#design').on('change', e => {
     if ($designValue === tShirts.jsPuns.value) {
         $('#colors-js-puns').show();
 
-        $colorOptions.each(function() {
+        $colorOptions.each(() => {
             const $optionText = $(this).text();
             if (tShirts.jsPuns.regex.test($optionText)) {
                 $(this).show();
@@ -50,7 +51,7 @@ $('select#design').on('change', e => {
     } else if ($designValue === tShirts.heartJS.value) {
         $('#colors-js-puns').show();
 
-        $colorOptions.each(function() {
+        $colorOptions.each(() => {
             const $optionText = $(this).text();
             if (tShirts.heartJS.regex.test($optionText)) {
                 $(this).show();
@@ -62,4 +63,24 @@ $('select#design').on('change', e => {
     } else {
         $('#colors-js-puns').hide();
     }
+});
+
+const $activitiesParent = $('.activities legend').parent();
+$activitiesParent.on('change', 'input', function(e) {
+    const $inputs = $('fieldset.activities input');
+    const $currentInput = $(this);
+    const $checked = $currentInput.prop('checked');
+    const $currentInputTime = $currentInput.attr('data-day-and-time');
+    
+    // disable same times when checked, renable when unchecked
+    $inputs.each((idx, el) => {
+        const elTime = $(el).attr('data-day-and-time');
+        if ($checked && elTime === $currentInputTime) {
+            $(el).attr('disabled', true);
+        } else if ($checked === false && elTime === $currentInputTime) {
+            $(el).attr('disabled', false);
+        }
+        // ensures current input is always enabled.  TODO: Figure out how to skip iteration
+        $currentInput.attr('disabled', false);
+    });
 });
