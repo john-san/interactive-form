@@ -1,9 +1,14 @@
 // globals
+const $activitiesParent = $('.activities legend').parent();
+let totalCost = 0;
+const $totalCostP = $('<p class="is-hidden"></p>');
 
-// focus on name Field on load
+
+// initialize
 $('input[name="user-name"]').focus();
-// hide 'other role' input input on load
 $('input#other-title').hide();
+$('#colors-js-puns').hide();
+$activitiesParent.append($totalCostP);
 
 // show 'other role' input when 'other' is selected
 $('select#title').on('change', e => {
@@ -14,9 +19,6 @@ $('select#title').on('change', e => {
         $('input#other-title').hide();
     }
 });
-
-//  hide shirt colors on load
-$('#colors-js-puns').hide();
 
 // show & hide correct tShirt colors
 $('select#design').on('change', e => {
@@ -65,22 +67,35 @@ $('select#design').on('change', e => {
     }
 });
 
-const $activitiesParent = $('.activities legend').parent();
+// ensure activity times don't conflict, tallies total price
 $activitiesParent.on('change', 'input', function(e) {
-    const $inputs = $('fieldset.activities input');
-    const $currentInput = $(this);
-    const $checked = $currentInput.prop('checked');
-    const $currentInputTime = $currentInput.attr('data-day-and-time');
+    const updatePrice = (checked, currentActivity) => {
+        const cost = parseInt(currentActivity.attr('data-cost'));
+        if ($totalCostP.is(":hidden")) { $totalCostP.show() ; }
+        checked ? totalCost += cost : totalCost -= cost;
+        $totalCostP.text(`Total: $${totalCost}`);
+    }
+
+    const checkTimes = (checked, activities, currentActivity) => {
+        const currentActivityTime = currentActivity.attr('data-day-and-time');
     
-    // disable same times when checked, renable when unchecked
-    $inputs.each((idx, el) => {
-        const elTime = $(el).attr('data-day-and-time');
-        if ($checked && elTime === $currentInputTime) {
-            $(el).attr('disabled', true);
-        } else if ($checked === false && elTime === $currentInputTime) {
-            $(el).attr('disabled', false);
-        }
-        // ensures current input is always enabled.  TODO: Figure out how to skip iteration
-        $currentInput.attr('disabled', false);
-    });
+        // disable same times when checked, renable when unchecked
+        activities.each((idx, el) => {
+            const $elTime = $(el).attr('data-day-and-time');
+            if (checked && $elTime === currentActivityTime) {
+                $(el).attr('disabled', true);
+            } else if (checked === false && $elTime === currentActivityTime) {
+                $(el).attr('disabled', false);
+            }
+            // ensures current input is always enabled.  TODO: Figure out how to skip iteration
+            currentActivity.attr('disabled', false);
+        });
+    }
+
+    const $activities = $('fieldset.activities input');
+    const $currentActivity = $(this);
+    const $checked = $currentActivity.prop('checked');
+    
+    updatePrice($checked, $currentActivity);
+    checkTimes($checked, $activities, $currentActivity);
 });
