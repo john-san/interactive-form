@@ -14,51 +14,54 @@ $('select#title').on('change', e => {
     }
 });
 
-// show corresponding tShirt colors & hide others TODO: Fix this
+// show corresponding tShirt colors & hide others
 $('select#design').on('change', e => {
-    const $designValue = $(e.target).val();
-    const tShirts = {
-        jsPuns: {
+    const processSelection = (selection) => {
+        const $colorOptions = $('#color').children();
+        const checkOption = (option) => {
+            const $optionValue = $(option).val();
+            const $optionText = $(option).text();
+            return selection.colors.includes($optionValue) && selection.regex.test($optionText);
+        }
+
+        if (selection) {
+            $('#colors-js-puns').show();
+    
+            $colorOptions.each((idx, option) => {
+                if (checkOption(option)) {
+                    $(option).show();
+                } else {
+                    $(option).hide();
+                }
+            });
+    
+            $('select#color').val(selection.colors[0]).change();
+    
+        } else {
+            $('#colors-js-puns').hide();
+        }
+    };
+
+    const tShirts = [
+         {
+            name: "jsPuns",
             value: "js puns",
             regex: /(.*)(\(JS Puns shirt only\))/,
             colors: ["cornflowerblue", "darkslategrey", "gold"]
         },
-        heartJS: {
+        {
+            name: "heartJS",
             value: "heart js",
             regex: /(.*)(\(I ♥ JS shirt only\))/,
             colors: ["tomato", "steelblue", "dimgrey"]
         }
-    }
-    const $colorOptions = $('#color').children();
-
-    if ($designValue === tShirts.jsPuns.value) {
-        $('#colors-js-puns').show();
-
-        $colorOptions.each(() => {
-            const $optionText = $(this).text();
-            if (tShirts.jsPuns.regex.test($optionText)) {
-                $(this).show();
-            } else {
-                $(this).hide();
-            }
-        });
-
-        $('select#color').val(tShirts.jsPuns.colors[0]).change();
-    } else if ($designValue === tShirts.heartJS.value) {
-        $('#colors-js-puns').show();
-
-        $colorOptions.each(() => {
-            const $optionText = $(this).text();
-            if (tShirts.heartJS.regex.test($optionText)) {
-                $(this).show();
-            } else {
-                $(this).hide();
-            }
-        });
-        $('select#color').val(tShirts.heartJS.colors[0]).change();
-    } else {
-        $('#colors-js-puns').hide();
-    }
+    ];
+    const $designValue = $(e.target).val();
+    const selectedTShirt = tShirts.find(tShirt => {
+        return tShirt.value == $designValue; 
+    });
+    
+    processSelection(selectedTShirt);
 });
 
 // ensure activity times don't conflict, tallies total price
