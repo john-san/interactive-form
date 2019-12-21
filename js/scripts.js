@@ -99,3 +99,44 @@ $activitiesParent.on('change', 'input', function(e) {
     updatePrice($checked, $currentActivity);
     checkTimes($checked, $activities, $currentActivity);
 });
+
+
+
+// event listener for payment select
+$('#payment').on('change', (e) => {
+    // set value of payment method
+    const value = e.target.value;
+    // switch
+    switch(value) {
+        // credit card
+            // show credit card
+            // hide paypal
+            // hide bitcoin
+        case "credit card":
+            $('#credit-card').show();
+            $('#paypal').hide();
+            $('#bitcoin').hide();
+            break;
+        // paypal
+            // show paypal
+            // hide credit card
+            // hide bitcoin
+        case "paypal":
+            $('#paypal').show();
+            $('#credit-card').hide();
+            $('#bitcoin').hide();
+            break;
+        // bitcoin
+            // show bitcoin
+            // hide paypal
+            // hide credit card
+        case "bitcoin":
+            $('#bitcoin').show();
+            $('#paypal').hide();
+            $('#credit-card').hide();
+            break;
+    }
+    // initialize
+    // select credit card
+    $('#payment').val('credit card').change();
+})
