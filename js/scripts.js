@@ -66,26 +66,26 @@ $('select#design').on('change', e => {
 
 // ensure activity times don't conflict, tallies total price
 $activitiesParent.on('change', 'input', function(e) {
-    const updatePrice = (checked, currentActivity) => {
-        const cost = parseInt(currentActivity.attr('data-cost'));
+    const updatePrice = () => {
+        const cost = parseInt($currentActivity.attr('data-cost'));
         if ($totalCostP.is(":hidden")) { $totalCostP.show() ; }
-        checked ? totalCost += cost : totalCost -= cost;
+        $checked ? totalCost += cost : totalCost -= cost;
         $totalCostP.text(`Total: $${totalCost}`);
     }
 
-    const checkTimes = (checked, activities, currentActivity) => {
-        const currentActivityTime = currentActivity.attr('data-day-and-time');
+    const checkTimes = () => {
+        const $currentActivityTime = $currentActivity.attr('data-day-and-time');
     
         // disable same times when checked, renable when unchecked
-        activities.each((idx, el) => {
-            const $elTime = $(el).attr('data-day-and-time');
-            if (checked && $elTime === currentActivityTime) {
-                $(el).attr('disabled', true);
-            } else if (checked === false && $elTime === currentActivityTime) {
-                $(el).attr('disabled', false);
+        $activities.each((idx, activity) => {
+            const $activityTime = $(activity).attr('data-day-and-time');
+            if ($checked && $activityTime === $currentActivityTime) {
+                $(activity).attr('disabled', true);
+            } else if ($checked === false && $activityTime === $currentActivityTime) {
+                $(activity).attr('disabled', false);
             }
             // ensures current input is always enabled.  TODO: Figure out how to skip iteration
-            currentActivity.attr('disabled', false);
+            $currentActivity.attr('disabled', false);
         });
     }
 
@@ -93,8 +93,8 @@ $activitiesParent.on('change', 'input', function(e) {
     const $currentActivity = $(this);
     const $checked = $currentActivity.prop('checked');
     
-    updatePrice($checked, $currentActivity);
-    checkTimes($checked, $activities, $currentActivity);
+    updatePrice();
+    checkTimes();
 });
 
 
@@ -125,8 +125,27 @@ $('#payment').on('change', (e) => {
 
 const validateName = () => {
     // name can't be blank
+    const $nameText = $('#name').val();
+    const regex = /[a-zA-Z]+/;
+    const passed = regex.test($nameText);
 
+    if (passed) {
+        $('#name').removeClass('error');
+        // remove span
+        return true;
+    } else {
+        console.log('bro');
+        // create some span
+        // append to input
+        $('#name').addClass('error');
+        return false;
+    }
 }
+
+$('#name').on('keyup change', (e) => {
+    console.log(e.target.value);
+    validateName();
+});
 
 const validateEmail = () => {
     // must be valid email, example: dave@teamtreehouse.com
@@ -140,8 +159,14 @@ const validateActivities = () => {
 
 const validateCC = () => {
     // Credit Card field should only accept a number between 13 and 16 digits.
+}
+
+const validateZip = () => {
     // The Zip Code field should accept a 5-digit number.
-    // The CVV should only accept a number that is exactly 3 digits long.
+}
+
+const validateCVV = () => {
+    // The CVV shouldonly accept a number that is exactly 3 digits long.
 }
 
 // initialize
