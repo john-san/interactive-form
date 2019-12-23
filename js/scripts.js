@@ -155,14 +155,29 @@ const validateName = () => {
 }
 
 $('#name').on('change keyup blur', (e) => {
-    console.log(e);
     validateName();
 });
 
 const validateEmail = () => {
     // must be valid email, example: dave@teamtreehouse.com
+    const $mailText = $('#mail').val();
+    const $mailID = $('#mail').attr('id');
+    const errorMessage = "Must use valid email";
+    const regex = /[\w-]+@[\w-]+\.\w+(\.\w+)?/;
+    const passed = regex.test($mailText);
 
+    if (passed) {
+        removeError($mailID);
+        return true;
+    } else {
+        addError($mailID, errorMessage);
+        return false;
+    }
 }
+
+$('#mail').on('change keyup blur', (e) => {
+    validateEmail();
+});
 
 const validateActivities = () => {
     // at least 1 activity must be checked
