@@ -123,6 +123,18 @@ $('#payment').on('change', (e) => {
     
 });
 
+$('form').on('submit', (e) => {
+    const passed = validateForm();
+
+    if (passed) {
+        return true;
+    } else {
+        e.preventDefault();
+        alert('Please enter & fix all missing information and then submit again.');
+        return false;
+    }
+});
+
 /* Validation */
 class textValidator {
     constructor(id, errorMessage, regex) {
@@ -140,7 +152,7 @@ class textValidator {
     }
 
     addError() {
-        // if the error message doesn't exist, create it
+        // if an error message doesn't exist, create it
         if ($(`#${this.id}_error`).length === 0) {
             const $err = $(`<div id="${this.id}_error" class="error-tooltip">${this.errorMessage}</div>`);
             $err.insertBefore($(`#${this.id}`));
@@ -162,14 +174,12 @@ class textValidator {
     }
 }
 
-
 const nameValidator = new textValidator('name', 'Name cannot be blank', /[a-zA-Z]+/);
 
 const emailValidator = new textValidator('mail', 'Must use valid email', /[\w-]+@[\w-]+\.\w+(\.\w+)?/);
 
 
 const validateActivities = () => {
-    // at least 1 activity must be checked
     const activities = [...document.querySelectorAll('.activities input[type="checkbox"]')];
     const passed = activities.some(activity => activity.checked === true);
 
@@ -177,8 +187,11 @@ const validateActivities = () => {
         $('#activities_error').remove();
         return true;
     } else {
-        const $err = $('<div id="activities_error" class="error-tooltip">At least 1 activity must be checked</div>');
-        $err.insertAfter($('fieldset.activities legend'));
+        // if an error message doesn't exist, create it
+        if ($('#activities_error').length === 0) {
+            const $err = $('<div id="activities_error" class="error-tooltip">At least 1 activity must be checked</div>');
+            $err.insertAfter($('fieldset.activities legend'));
+        }
         return false;
     }
 }
@@ -188,6 +201,26 @@ const CCValidator = new textValidator('cc-num', 'Credit card number must be betw
 const zipValidator = new textValidator('zip', 'Zip code must be 5 digits', /^\d{5}$/);
 
 const CVVValidator = new textValidator('cvv', 'CVV must be 3 digits', /^\d{3}$/);
+
+const validateForm = () => {
+    const creditCardSelected = $('#payment').val() === "credit card";
+    if (creditCardSelected) {
+        nameValidator.validate();
+        emailValidator.validate();
+        validateActivities();
+        CCValidator.validate();
+        zipValidator.validate();
+        CVVValidator.validate();
+
+        return nameValidator.validate() && emailValidator.validate() && validateActivities() && CCValidator.validate() && zipValidator.validate() && CVVValidator.validate();
+    } else {
+        nameValidator.validate();
+        emailValidator.validate();
+        validateActivities();
+        
+        return nameValidator.validate() && emailValidator.validate() && validateActivities();
+    }  
+}
 
 /* Initialize */
 $('input[name="user-name"]').focus();
