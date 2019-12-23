@@ -123,27 +123,39 @@ $('#payment').on('change', (e) => {
 });
 
 
+const removeError = inputID => {
+    ($(`#${inputID}`)).removeClass('error');
+    $(`#${inputID}_error`).remove();
+}
+
+const addError = (inputID, errorMessage) => {
+    // if the error message doesn't exist, create it
+    if ($(`#${inputID}_error`).length === 0) {
+        const $err = $(`<span id="${inputID}_error">${errorMessage}</span>`);
+        $err.insertBefore($(`#${inputID}`));
+    }
+    $(`#${inputID}`).addClass('error');
+}
+
+
 const validateName = () => {
-    // name can't be blank
     const $nameText = $('#name').val();
+    const $nameID = $('#name').attr('id');
+    const errorMessage = "Name cannot be blank";
     const regex = /[a-zA-Z]+/;
     const passed = regex.test($nameText);
 
     if (passed) {
-        $('#name').removeClass('error');
-        // remove span
+        removeError($nameID);
         return true;
     } else {
-        console.log('bro');
-        // create some span
-        // append to input
-        $('#name').addClass('error');
+        addError($nameID, errorMessage);
         return false;
     }
 }
 
-$('#name').on('keyup change', (e) => {
-    console.log(e.target.value);
+$('#name').on('change keyup blur', (e) => {
+    console.log(e);
     validateName();
 });
 
