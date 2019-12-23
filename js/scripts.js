@@ -130,7 +130,12 @@ $('form').on('submit', (e) => {
         return true;
     } else {
         e.preventDefault();
-        alert('Please enter & fix all missing information and then submit again.');
+        window.scrollTo(0, 0);
+
+        if ($('#form_error').length === 0)  {
+            $('form').prepend('<div id="form_error" class="error-tooltip">Please enter & fix all missing information and then submit again.</div');
+        }
+
         return false;
     }
 });
@@ -151,24 +156,37 @@ class textValidator {
         $(`#${this.id}_error`).remove();
     }
 
-    addError() {
+    addError(optionalMessage = "") {
         // if an error message doesn't exist, create it
         if ($(`#${this.id}_error`).length === 0) {
-            const $err = $(`<div id="${this.id}_error" class="error-tooltip">${this.errorMessage}</div>`);
+            const $err = $(`<div id="${this.id}_error" class="error-tooltip">${optionalMessage || this.errorMessage}</div>`);
             $err.insertBefore($(`#${this.id}`));
         }
         $(`#${this.id}`).addClass('error');
     }
 
+    isBlank(inputValue) {
+        const stripped = inputValue.trim();
+        return inputValue === "null" || inputValue === "";
+    }
+
     validate() {
         const inputValue = $(`#${this.id}`).val();
         const passed = this.regex.test(inputValue);
+        const blank = this.isBlank(inputValue);
 
-        if (passed) {
+      
+        if (passed && blank === false) {
             this.removeError();
             return true;
         } else {
-            this.addError();
+            this.removeError();
+            if (blank) {
+                this.addError(`This field cannot be blank`);
+            } else {
+                this.addError();
+            }
+            
             return false;
         }
     }
