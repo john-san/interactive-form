@@ -1,9 +1,10 @@
-// globals
+/* Globals */ 
 const $activitiesParent = $('.activities legend').parent();
 let totalCost = 0;
 const $totalCostP = $('<p class="is-hidden"></p>');
 
 
+/* Form Behaviors */
 // show 'other role' input when 'other' is selected
 $('select#title').on('change', e => {
     const $jobRoleValue = $(e.target).val();
@@ -95,8 +96,8 @@ $activitiesParent.on('change', 'input', function(e) {
     
     updatePrice();
     checkTimes();
+    validateActivities();
 });
-
 
 
 // show correct payment method info on selection
@@ -122,11 +123,15 @@ $('#payment').on('change', (e) => {
     
 });
 
+/* Validation */
 class textValidator {
     constructor(id, errorMessage, regex) {
+        let self = this;
         this.id = id;
         this.errorMessage = errorMessage;
         this.regex = regex;
+
+        $(`#${this.id}`).on('change keyup blur', e =>  self.validate());
     }
 
     removeError() {
@@ -137,7 +142,7 @@ class textValidator {
     addError() {
         // if the error message doesn't exist, create it
         if ($(`#${this.id}_error`).length === 0) {
-            const $err = $(`<span id="${this.id}_error" class="error-tooltip">${this.errorMessage}</span>`);
+            const $err = $(`<div id="${this.id}_error" class="error-tooltip">${this.errorMessage}</div>`);
             $err.insertBefore($(`#${this.id}`));
         }
         $(`#${this.id}`).addClass('error');
@@ -160,34 +165,31 @@ class textValidator {
 
 const nameValidator = new textValidator('name', 'Name cannot be blank', /[a-zA-Z]+/);
 
-$('#name').on('change keyup blur', (e) => {
-    nameValidator.validate();
-});
-
 const emailValidator = new textValidator('mail', 'Must use valid email', /[\w-]+@[\w-]+\.\w+(\.\w+)?/);
 
-$('#mail').on('change keyup blur', (e) => {
-    emailValidator.validate();
-});
 
 const validateActivities = () => {
     // at least 1 activity must be checked
+    const activities = [...document.querySelectorAll('.activities input[type="checkbox"]')];
+    const passed = activities.some(activity => activity.checked === true);
 
+    if (passed) {
+        $('#activities_error').remove();
+        return true;
+    } else {
+        const $err = $('<div id="activities_error" class="error-tooltip">At least 1 activity must be checked</div>');
+        $err.insertAfter($('fieldset.activities legend'));
+        return false;
+    }
 }
 
-const validateCC = () => {
-    // Credit Card field should only accept a number between 13 and 16 digits.
-}
+const CCValidator = new textValidator('cc-num', 'Credit card number must be between 13 and 16 digits', /^\d{13,16}$/);
 
-const validateZip = () => {
-    // The Zip Code field should accept a 5-digit number.
-}
+const zipValidator = new textValidator('zip', 'Zip code must be 5 digits', /^\d{5}$/);
 
-const validateCVV = () => {
-    // The CVV shouldonly accept a number that is exactly 3 digits long.
-}
+const CVVValidator = new textValidator('cvv', 'CVV must be 3 digits', /^\d{3}$/);
 
-// initialize
+/* Initialize */
 $('input[name="user-name"]').focus();
 $('input#other-title').hide();
 $('#colors-js-puns').hide();
