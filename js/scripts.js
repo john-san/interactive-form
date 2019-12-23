@@ -122,61 +122,52 @@ $('#payment').on('change', (e) => {
     
 });
 
-
-const removeError = inputID => {
-    ($(`#${inputID}`)).removeClass('error');
-    $(`#${inputID}_error`).remove();
-}
-
-const addError = (inputID, errorMessage) => {
-    // if the error message doesn't exist, create it
-    if ($(`#${inputID}_error`).length === 0) {
-        const $err = $(`<span id="${inputID}_error">${errorMessage}</span>`);
-        $err.insertBefore($(`#${inputID}`));
+class textValidator {
+    constructor(id, errorMessage, regex) {
+        this.id = id;
+        this.errorMessage = errorMessage;
+        this.regex = regex;
     }
-    $(`#${inputID}`).addClass('error');
-}
 
+    removeError() {
+        $(`#${this.id}`).removeClass('error');
+        $(`#${this.id}_error`).remove();
+    }
 
-const validateName = () => {
-    const $nameText = $('#name').val();
-    const $nameID = $('#name').attr('id');
-    const errorMessage = "Name cannot be blank";
-    const regex = /[a-zA-Z]+/;
-    const passed = regex.test($nameText);
+    addError() {
+        // if the error message doesn't exist, create it
+        if ($(`#${this.id}_error`).length === 0) {
+            const $err = $(`<span id="${this.id}_error" class="error-tooltip">${this.errorMessage}</span>`);
+            $err.insertBefore($(`#${this.id}`));
+        }
+        $(`#${this.id}`).addClass('error');
+    }
 
-    if (passed) {
-        removeError($nameID);
-        return true;
-    } else {
-        addError($nameID, errorMessage);
-        return false;
+    validate() {
+        const inputValue = $(`#${this.id}`).val();
+        const passed = this.regex.test(inputValue);
+
+        if (passed) {
+            this.removeError();
+            return true;
+        } else {
+            this.addError();
+            return false;
+        }
     }
 }
+
+
+const nameValidator = new textValidator('name', 'Name cannot be blank', /[a-zA-Z]+/);
 
 $('#name').on('change keyup blur', (e) => {
-    validateName();
+    nameValidator.validate();
 });
 
-const validateEmail = () => {
-    // must be valid email, example: dave@teamtreehouse.com
-    const $mailText = $('#mail').val();
-    const $mailID = $('#mail').attr('id');
-    const errorMessage = "Must use valid email";
-    const regex = /[\w-]+@[\w-]+\.\w+(\.\w+)?/;
-    const passed = regex.test($mailText);
-
-    if (passed) {
-        removeError($mailID);
-        return true;
-    } else {
-        addError($mailID, errorMessage);
-        return false;
-    }
-}
+const emailValidator = new textValidator('mail', 'Must use valid email', /[\w-]+@[\w-]+\.\w+(\.\w+)?/);
 
 $('#mail').on('change keyup blur', (e) => {
-    validateEmail();
+    emailValidator.validate();
 });
 
 const validateActivities = () => {
