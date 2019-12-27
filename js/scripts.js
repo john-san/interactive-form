@@ -85,9 +85,9 @@ $activitiesParent.on('change', 'input', function(e) {
             } else if ($checked === false && $activityTime === $currentActivityTime) {
                 $(activity).attr('disabled', false);
             }
-            // ensures current input is always enabled.  TODO: Figure out how to skip iteration
-            $currentActivity.attr('disabled', false);
         });
+        // ensures current input is always enabled.
+        $currentActivity.attr('disabled', false);
     }
 
     const $activities = $('fieldset.activities input');
